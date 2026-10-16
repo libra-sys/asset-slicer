@@ -1,0 +1,8 @@
+{
+  "供应商": {
+    "listenhub-image": {
+      "api_key": "YOUR_API_KEY_HERE",
+      "base_url": "https://your-image-endpoint.example.com/v1"
+    }
+  }
+}

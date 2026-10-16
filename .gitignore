@@ -1,0 +1,10 @@
+config.json
+__pycache__/
+*.pyc
+*.bak
+out/
+mats/
+mats_masked/
+cards/
+final/
+*.png
