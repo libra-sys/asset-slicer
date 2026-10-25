@@ -1,28 +1,43 @@
 # asset-slicer
 
-WorkBuddy skill · 切图 / 规格化 / 出图工具。
+A local-first toolkit and Codex/WorkBuddy skill for preparing reusable visual assets from images, PDFs, spritesheets, and approved slide designs.
 
-把设计稿、图片、PDF 材料拆成可继续编辑的资产：
+## What it does
 
-- **切图**：`detect`（连通域，元素大小不一/位置随机首选）/ `grid` / `grid-detect`（智能推断行列）/ `trim`（裁透明空边）/ `debg`（边缘种子洪水填充去背）/ `dedup`（感知哈希去重）
-- **材料流水线**：`pdf2png`（PDF 逐页转 PNG）/ `mask`（隐私打码，按比例）/ `cards`（批量统一规格卡片）/ `spec`（按 spec.json 落位留白/安全区/九宫格）
-- **出图**：`artgen`（调图片生成 API，出图结果可直接被 detect/grid 切）
+- Crop transparent margins and split known grids or separated alpha components.
+- Convert PDF pages to images, mask selected areas, normalize images to consistent cards, and deduplicate assets.
+- Support optional image-generation API workflows through local configuration.
+- Document a semantic, page-by-page workflow for turning an approved slide visual into individually movable assets and editable native text.
 
-完整用法、参数调优与踩坑记录见 [`SKILL.md`](SKILL.md)。
+## Important limitation
 
-## 快速开始
+`detect` finds connected opaque regions; it does not understand semantic objects. It cannot infer that a region is a button, person, panel, certificate, or title. For slide decomposition, identify each object and its source bounds first, isolate it with a mask or recover the original asset, then use local algorithms for the appropriate crop. Rebuild ordinary copy as native text and reuse original evidence images. Do not use fixed grid slicing of a complete slide as a substitute for element extraction.
 
-```bash
-pip install Pillow numpy scipy imagehash pymupdf
-python scripts/slice.py detect input.png --min-size 200
+## Install
+
+```powershell
+python -m pip install Pillow numpy scipy imagehash pymupdf
 ```
 
-## 配置（仅 artgen 出图需要）
+Run a local command, for example:
 
-复制 `scripts/config.example.json` 为 `scripts/config.json` 并填入密钥：
-
-```json
-{ "供应商": { "listenhub-image": { "api_key": "YOUR_KEY", "base_url": "https://..." } } }
+```powershell
+python scripts/slice.py detect .\input.png --min-size 200
+python scripts/slice.py pdf2png --path .\materials --outdir .\mats
 ```
 
-也可用环境变量 `CONTEST_PPT_CONFIG` 指定配置文件路径。本地切图命令（trim/grid/detect/debg/mask/cards…）无需任何 API。
+Run `python scripts/slice.py --help` for available commands. Some commands require optional dependencies listed above.
+
+## Optional image generation
+
+Local slicing does not need an API key. For `artgen`, copy `scripts/config.example.json` to `scripts/config.json`, fill it locally, and never commit the real config. `CONTEST_PPT_CONFIG` can point to another local config file. The placeholder config is not usable as-is.
+
+## Skill installation
+
+Copy `SKILL.md` and `references/` into your agent's skill directory as `asset-slicer/`. Keep the Python utility available at `scripts/slice.py` if you want to run the commands from the skill.
+
+See [SKILL.md](SKILL.md) for the full workflows and [approved-slide-slicing.md](references/approved-slide-slicing.md) for the semantic extraction, manifest, and reconstruction protocol.
+
+## License
+
+MIT. See [LICENSE](LICENSE).

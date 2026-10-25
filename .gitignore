@@ -1,4 +1,8 @@
 config.json
+scripts/config.json
+.env
+.env.*
+!.env.example
 __pycache__/
 *.pyc
 *.bak
