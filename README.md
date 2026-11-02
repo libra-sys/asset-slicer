@@ -1,43 +1,49 @@
 # asset-slicer
 
-A local-first toolkit and Codex/WorkBuddy skill for preparing reusable visual assets from images, PDFs, spritesheets, and approved slide designs.
+**面向 Codex / WorkBuddy 的本地优先素材处理与切图 Skill。** 可处理图片、PDF、雪碧图和已确认的演示文稿视觉稿，帮助整理可复用素材，并记录逐页拆分、重组和检查流程。
 
-## What it does
+English: [README.en.md](README.en.md)
 
-- Crop transparent margins and split known grids or separated alpha components.
-- Convert PDF pages to images, mask selected areas, normalize images to consistent cards, and deduplicate assets.
-- Support optional image-generation API workflows through local configuration.
-- Document a semantic, page-by-page workflow for turning an approved slide visual into individually movable assets and editable native text.
+## 能做什么
 
-## Important limitation
+- 裁切透明边缘；按已知网格或透明连通区域切图。
+- 将 PDF 页面转换成图片，按比例打码、规格化素材卡片和查找重复图片。
+- 通过可选的本地配置调用图片生成服务。
+- 按页整理已确认的幻灯片视觉稿：识别对象、提取或重建素材、记录 manifest，再按原布局重组。
 
-`detect` finds connected opaque regions; it does not understand semantic objects. It cannot infer that a region is a button, person, panel, certificate, or title. For slide decomposition, identify each object and its source bounds first, isolate it with a mask or recover the original asset, then use local algorithms for the appropriate crop. Rebuild ordinary copy as native text and reuse original evidence images. Do not use fixed grid slicing of a complete slide as a substitute for element extraction.
+## 重要限制
 
-## Install
+`detect` 只按透明区域的连通边界裁切，**不理解按钮、人物、面板、证书或标题等语义**。拆分整页视觉稿时，需要先由人或前置流程确定每个对象的范围，再选择原素材、蒙版提取或局部重建；算法不能代替逐件判断。整页按固定行列裁片，也不能当作逐元素拆分。
+
+## 安装与使用
+
+需要 Python。按需安装依赖：
 
 ```powershell
 python -m pip install Pillow numpy scipy imagehash pymupdf
 ```
 
-Run a local command, for example:
+示例：
 
 ```powershell
 python scripts/slice.py detect .\input.png --min-size 200
 python scripts/slice.py pdf2png --path .\materials --outdir .\mats
 ```
 
-Run `python scripts/slice.py --help` for available commands. Some commands require optional dependencies listed above.
+用 `python scripts/slice.py --help` 查看命令。部分功能需要对应的可选依赖。
 
-## Optional image generation
+作为 Skill 使用时，将 `SKILL.md` 和 `references/` 复制到 agent 的 `asset-slicer/` 技能目录；若要运行本地命令，也需要保留 `scripts/slice.py`。
 
-Local slicing does not need an API key. For `artgen`, copy `scripts/config.example.json` to `scripts/config.json`, fill it locally, and never commit the real config. `CONTEST_PPT_CONFIG` can point to another local config file. The placeholder config is not usable as-is.
+## 可选图片生成配置
 
-## Skill installation
+本地切图不需要 API key。若选择 `artgen`，复制 `scripts/config.example.json` 为本地 `scripts/config.json`，再自行填写服务商信息。真实配置文件不要提交到 Git；也可用 `CONTEST_PPT_CONFIG` 指定本地配置路径。示例中的地址和密钥是占位内容，不能直接调用。
 
-Copy `SKILL.md` and `references/` into your agent's skill directory as `asset-slicer/`. Keep the Python utility available at `scripts/slice.py` if you want to run the commands from the skill.
+逐页拆件、manifest、原位重组和验收细则见 [SKILL.md](SKILL.md) 与 [已批准视觉稿拆分协议](references/approved-slide-slicing.md)。
 
-See [SKILL.md](SKILL.md) for the full workflows and [approved-slide-slicing.md](references/approved-slide-slicing.md) for the semantic extraction, manifest, and reconstruction protocol.
+## 姊妹 Skill
 
-## License
+[contest-ppt-generator](https://github.com/libra-sys/contest-ppt-generator) 负责内容组织、视觉规划和 PPT 制作；本仓库负责素材处理、切图与拆分流程。
 
-MIT. See [LICENSE](LICENSE).
+## 许可
+
+MIT，详见 [LICENSE](LICENSE)。
